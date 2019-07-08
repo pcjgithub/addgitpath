@@ -7,7 +7,7 @@
 const fs = require("fs");
 const join = require("path").join;
 /**
- * 任务队列封装：并行获取git远程路径和本地js的路径，最后执行写入操作
+ * 获取git远程路径和本地js的路径，最后执行写入操作
  * @param {buildPath} 打包之后根路径,如果config文件选择从config文件读取，否则默认为dist
  * @param {mainJsPath} 选择加入路径的js文件，1为仅在main_hash.js或index_hash.js写入，2为在所有.js文件下写入路径，1为默认值
  */
