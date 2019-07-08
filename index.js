@@ -18,7 +18,7 @@ const MainJsPath = process.env.npm_package_scripts_arthur.split(
   ? process.env.npm_package_scripts_arthur.split("--mainJsPath=")[1]
   : "1";
 const isMainJsPath = MainJsPath === "1";
-const PathArr = require("../config/paths");
+const PathArr = require("../../config/paths");
 const tasks = [getGitPath, getDistFiles, writePath];
 const buildPath =PathArr.appBuild?PathArr.appBuild.split("/")[PathArr.appBuild.split("/").length-1]:"dist";
 function next(...result) {
@@ -33,7 +33,7 @@ function getGitPath() {
     if (error) {
       return console.log("Failed to read '.git' file");
     } else {
-      const gitPath = data.split(".git")[0].split("git@")[1];
+      const gitPath = data.split(".git")[0].split("git@")[1].split(":")[1];
       next(gitPath);
     }
   });
@@ -56,7 +56,7 @@ function getDistFiles(result) {
   findDistFile(buildPath);
   const filterRegular = isMainJsPath ? /^(main|index)[a-zA-Z0-9_-]*\.js$/ : /^[a-zA-Z0-9_-]+\.js$/;
   const distArr = distTotalArr.filter(path =>
-    filterRegular.test(path.split("/")[path.split("/").length - 1])
+    filterRegular.test(path.indexOf("/")>-1?path.split("/")[path.split("/").length - 1]:path.split("\\")[path.split("\\").length - 1])
   );
   if (distArr.length && isMainJsPath) {
     next(result.join(""), distArr[0]);
@@ -88,7 +88,7 @@ function writePath(result) {
     }else{
       result[1].map(item=>{
         fs.appendFile(
-          item,
+          item,"\n\r"+"\r"+"\n"+
           ";function Romote_Git_Path (){alert('" + result[0] + "')};",
           error => {
             if (error)
