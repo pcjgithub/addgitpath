@@ -76,7 +76,7 @@ function writePath(result) {
           if (isMainJsPath) {
             fs.appendFile(
               result[1],
-              ";function Romote_Git_Path (){alert('" + result[0] + "')};",
+              "\r\n\n\r;//# Romote_Git_Path =" + result[0] + ";\r\n\n\r",
               error => {
                 if (error) return console.log("Failed to write gitPath" + error.message);
                 console.log("success write gitPath");
@@ -88,8 +88,8 @@ function writePath(result) {
     }else{
       result[1].map(item=>{
         fs.appendFile(
-          item,"\n\r"+"\r"+"\n"+
-          ";function Romote_Git_Path (){alert('" + result[0] + "')};",
+          item,
+          "\r\n\n\r;//# Romote_Git_Path =" + result[0] + ";\r\n\n\r",
           error => {
             if (error)
               return console.log("写入文件失败,原因是" + error.message);
