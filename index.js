@@ -12,13 +12,17 @@ const join = require("path").join;
  * @param {mainJsPath} 选择加入路径的js文件，1为仅在main_hash.js或index_hash.js写入，2为在所有.js文件下写入路径，1为默认值
  */
 //TODO Optimize node execution process
-const MainJsPath = process.env.npm_package_scripts_arthur.split(
-  "--mainJsPath="
-)[1]
-  ? process.env.npm_package_scripts_arthur.split("--mainJsPath=")[1]
-  : "1";
+// const MainJsPath = process.env.npm_package_scripts_arthur.split(
+//   "--mainJsPath="
+// )[1]
+//   ? process.env.npm_package_scripts_arthur.split("--mainJsPath=")[1]
+//   : "1";
+const MainJsPath = ""
 const isMainJsPath = MainJsPath === "1";
-const PathArr = require("../../config/paths");
+/**
+ * 判断是否存在paths文件目录
+ */
+const PathArr =fs.existsSync('config/paths.js')?require("../../config/paths"):{};
 const tasks = [getGitPath, getDistFiles, writePath];
 const buildPath =PathArr.appBuild?PathArr.appBuild.split("/")[PathArr.appBuild.split("/").length-1]:"dist";
 function next(...result) {
