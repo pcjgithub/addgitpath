@@ -6,29 +6,36 @@
 "use strict";
 const fs = require("fs");
 const join = require("path").join;
+let canPaly = true
 /**
  * 获取git远程路径和本地js的路径，最后执行写入操作
  * @param {buildPath} 打包之后根路径,如果config文件选择从config文件读取，否则默认为dist
  * @param {mainJsPath} 选择加入路径的js文件，1为仅在main_hash.js或index_hash.js写入，2为在所有.js文件下写入路径，1为默认值
  */
-//TODO Optimize node execution process
-// const MainJsPath = process.env.npm_package_scripts_arthur.split(
-//   "--mainJsPath="
-// )[1]
-//   ? process.env.npm_package_scripts_arthur.split("--mainJsPath=")[1]
-//   : "1";
-const MainJsPath = ""
-const isMainJsPath = MainJsPath === "1";
+const isMainJsPath = getParams("--mainJsPath=") === 2;
 /**
  * 判断是否存在paths文件目录
  */
-const PathArr =fs.existsSync('config/paths.js')?require("../../config/paths"):{};
-const tasks = [getGitPath, getDistFiles, writePath];
-const buildPath =PathArr.appBuild?PathArr.appBuild.split("/")[PathArr.appBuild.split("/").length-1]:"dist";
+if(!process.env.npm_lifecycle_script){
+  canPaly = false;
+  console.log("failed to get params")
+}
+const PathArr = !getParams("--buildPath=")&&fs.existsSync('config/paths.js')?require("../../config/paths"):{};
+const tasks =[getGitPath, getDistFiles, writePath];
+const buildPath =getParams("--buildPath=")?getParams("--buildPath="):PathArr.appBuild?PathArr.appBuild.split("/")[PathArr.appBuild.split("/").length-1]:"dist";
+if(!fs.existsSync(buildPath)){
+  canPaly = false;
+  console.log("can not get build path")
+}
+function getParams(str){
+  if(process.env.npm_lifecycle_script.indexOf(str)<0) return false
+  return (process.env.npm_lifecycle_script+" ").split(str)[1].split(" ")[0]
+}
 function next(...result) {
   if (tasks.length > 0) {
     tasks.shift()(result);
   } else {
+    console.log("failed to read scripts")
     return;
   }
 }
@@ -37,7 +44,9 @@ function getGitPath() {
     if (error) {
       return console.log("Failed to read '.git' file");
     } else {
-      const gitPath = data.split(".git")[0].split("git@")[1].split(":")[1];
+   
+      const gitPath = data.split("url")[1].split(".git")[0].split(":")[1];
+    
       next(gitPath);
     }
   });
@@ -58,10 +67,11 @@ function getDistFiles(result) {
     });
   }
   findDistFile(buildPath);
-  const filterRegular = isMainJsPath ? /^(main|index)[a-zA-Z0-9_-]*\.js$/ : /^[a-zA-Z0-9_-]+\.js$/;
+  const filterRegular = !isMainJsPath ? /^(main|index|app|default|base)[\w-\.\s\(\)\（\）]*\.js$/ : /^[\w-\.\s\(\)\（\）]+\.js$/;
   const distArr = distTotalArr.filter(path =>
     filterRegular.test(path.indexOf("/")>-1?path.split("/")[path.split("/").length - 1]:path.split("\\")[path.split("\\").length - 1])
   );
+  console.log(distArr.length);
   if (distArr.length && isMainJsPath) {
     next(result.join(""), distArr[0]);
   } else if (distArr.length && !isMainJsPath) {
@@ -104,4 +114,6 @@ function writePath(result) {
     }
   }
 }
-next();
+if(canPaly){
+  next();
+}
