@@ -23,6 +23,7 @@ mainJsPath:1 or 2选择加入路径的js文件，1为仅在base_hash.js或app_ha
 // change function to comment
 //fit webpack 
 //add build path param
+//add action tips
 ```
 
 ## License
