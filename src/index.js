@@ -95,8 +95,7 @@ function writePath(result) {
       fs.readFile(result[1], "utf-8", (error, data) => {
         if (error) {
           return Logs("unable to read remote directory");
-        } else {
-          if (isMainJsPath) {
+        } else { 
             fs.appendFile(
               result[1],
               "\r\n\n\r;//# Romote_Git_Path=" + result[0] + ";\r\n\n\r",
@@ -105,7 +104,6 @@ function writePath(result) {
                 Logs("success write in","succ");
               }
             );
-          }
         }
       });
     }else{

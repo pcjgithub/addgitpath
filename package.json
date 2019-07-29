@@ -1,6 +1,6 @@
 {
   "name": "addgitpath",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Automatically use git to do the version management path into the production environment when packaging the production environment, so that colleagues can locate the path and owner of the project.（在生产环境打包时自动将使用git做版本管理的路径打入到生产环境中，方便同事定位该项目的路径以及拥有者）",
   "main": "index.js",
   "scripts": {
